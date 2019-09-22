@@ -79,8 +79,7 @@ function getTable(pageCounter) {
                 name.innerText = data.results[i].name;
                 if (data.results[i].diameter !== 'unknown') {
                     diameter.innerText = `${parseInt(data.results[i].diameter).toLocaleString()} km`;
-                }
-                else {
+                } else {
                     diameter.innerText = data.results[i].diameter;
                 }
                 climate.innerText = data.results[i].climate;
@@ -97,29 +96,30 @@ function getTable(pageCounter) {
                 }
                 if (data.results[i].residents.length === 0) {
                     residents.innerText = 'No known residents';
+                    texts[i] = [];
                 } else {
 
                     texts[i] = data.results[i].residents;
 
-                    function getNames(people) {
+                    async function getNames() {
                         for (let j = 0; j < texts[i].length; j++) {
-                            fetch(`${texts[i][j]}`).then((response) => response.json())
+                            await fetch(`${texts[i][j]}`).then((response) => response.json())
                                 .then((data) => {
                                     let modal = createModal(data.name, data.height, data.mass, data.hair_color,
                                         data.skin_color, data.eye_color, data.birth_year, data.gender, i);
+                                    let currentTable = document.querySelector(`#modal-table${i}`);
                                     appendText(data.name, data.height, data.mass, data.hair_color,
-                                        data.skin_color, data.eye_color, data.birth_year, data.gender, i);
+                                        data.skin_color, data.eye_color, data.birth_year, data.gender, i, currentTable);
                                     document.body.appendChild(modal);
                                 });
                         }
                     }
 
                     getNames();
-                    console.log();
-
                     if (document.contains(document.querySelector(`#myModal${i}`))) {
                         document.querySelector(`#myModal${i}`).remove();
                     }
+
                     if (document.contains(document.querySelector(`#myText${i}`))) {
                         document.querySelector(`#myText${i}`).innerHTML = '';
                     }
@@ -233,8 +233,6 @@ function createModal(name, height, mass, hairColor, skinColor, eyeColor, birthYe
     modalBirthYear.innerText = birthYear;
     modalGender.innerText = gender;
 
-    let modalText = document.createElement('p');
-    modalText.setAttribute('id', `myText${i}`);
     let modalFooter = document.createElement('div');
     modalFooter.setAttribute('class', 'modal-footer');
     let closeButton = document.createElement('button');
@@ -275,39 +273,39 @@ function createModal(name, height, mass, hairColor, skinColor, eyeColor, birthYe
     return myModal;
 }
 
-function appendText(name, height, mass, hairColor, skinColor, eyeColor, birthYear, gender, i, modal) {
-    if (document.querySelector(`#myRow${i}`) != null) {
+function appendText(name, height, mass, hairColor, skinColor, eyeColor, birthYear, gender, i, currentTable) {
+    if (currentTable != null) {
         let modalRow = document.createElement('tr');
 
-        let modalName = document.createElement('td');
-        let modalHeight = document.createElement('td');
-        let modalMass = document.createElement('td');
-        let modalHairColor = document.createElement('td');
-        let modalSkinColor = document.createElement('td');
-        let modalEyeColor = document.createElement('td');
-        let modalBirthYear = document.createElement('td');
-        let modalGender = document.createElement('td');
-        modalName.innerText = name;
-        modalHeight.innerText = height;
-        modalMass.innerText = mass;
-        modalHairColor.innerText = hairColor;
-        modalSkinColor.innerText = skinColor;
-        modalEyeColor.innerText = eyeColor;
-        modalBirthYear.innerText = birthYear;
-        modalGender.innerText = gender;
+    let modalName = document.createElement('td');
+    let modalHeight = document.createElement('td');
+    let modalMass = document.createElement('td');
+    let modalHairColor = document.createElement('td');
+    let modalSkinColor = document.createElement('td');
+    let modalEyeColor = document.createElement('td');
+    let modalBirthYear = document.createElement('td');
+    let modalGender = document.createElement('td');
+    modalName.innerText = name;
+    modalHeight.innerText = height;
+    modalMass.innerText = mass;
+    modalHairColor.innerText = hairColor;
+    modalSkinColor.innerText = skinColor;
+    modalEyeColor.innerText = eyeColor;
+    modalBirthYear.innerText = birthYear;
+    modalGender.innerText = gender;
 
-        modalRow.appendChild(modalName);
-        modalRow.appendChild(modalHeight);
-        modalRow.appendChild(modalMass);
-        modalRow.appendChild(modalHairColor);
-        modalRow.appendChild(modalSkinColor);
-        modalRow.appendChild(modalEyeColor);
-        modalRow.appendChild(modalBirthYear);
-        modalRow.appendChild(modalGender);
+    modalRow.appendChild(modalName);
+    modalRow.appendChild(modalHeight);
+    modalRow.appendChild(modalMass);
+    modalRow.appendChild(modalHairColor);
+    modalRow.appendChild(modalSkinColor);
+    modalRow.appendChild(modalEyeColor);
+    modalRow.appendChild(modalBirthYear);
+    modalRow.appendChild(modalGender);
 
-        document.querySelector(`#modal-table${i}`).appendChild(modalRow);
-
+    currentTable.appendChild(modalRow);
     }
+
 
 }
 
